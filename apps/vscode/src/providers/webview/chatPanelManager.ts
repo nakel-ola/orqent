@@ -6,12 +6,12 @@ import { handleCommonBridgeRequest } from "./bridgeHandler.js";
 
 export function getChatPanelTitle(title: string, projectName: string): string {
   if (title.trim().length > 0) {
-    return `T3 Code - ${title}`;
+    return `Orqent - ${title}`;
   }
   if (projectName.trim().length > 0) {
-    return `T3 Code - ${projectName}`;
+    return `Orqent - ${projectName}`;
   }
-  return "T3 Code - New Thread";
+  return "Orqent - New Thread";
 }
 
 export class ChatPanelManager {
@@ -30,7 +30,7 @@ export class ChatPanelManager {
     }
 
     const panel = vscode.window.createWebviewPanel(
-      "t3code.chatPanel",
+      "orqent.chatPanel",
       getChatPanelTitle(payload.title, payload.projectName),
       vscode.ViewColumn.Active,
       {

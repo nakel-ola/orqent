@@ -19,7 +19,7 @@ function getWorkspaceFolders(): WorkspaceFolderEntry[] {
 }
 
 export class MainViewProvider implements vscode.WebviewViewProvider {
-  static readonly viewId = "t3code.mainView";
+  static readonly viewId = "orqent.mainView";
 
   private view: vscode.WebviewView | undefined;
 

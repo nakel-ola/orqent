@@ -40,7 +40,7 @@ describe("webviewHtml", () => {
     });
 
     expect(html).toContain("Content-Security-Policy");
-    expect(html).toContain("window.__T3CODE_WEBVIEW_CONFIG__=");
+    expect(html).toContain("window.__ORQENT_WEBVIEW_CONFIG__=");
     expect(html).toContain("nonce-123");
   });
 

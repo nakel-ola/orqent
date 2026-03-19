@@ -66,7 +66,7 @@ function killServerProcess(): void {
 }
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-  outputChannel = vscode.window.createOutputChannel("T3 Code Server");
+  outputChannel = vscode.window.createOutputChannel("Orqent Server");
   context.subscriptions.push(outputChannel, { dispose: () => killServerProcess() });
 
   await vscode.workspace.fs.createDirectory(context.globalStorageUri);
@@ -76,17 +76,17 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const nodeBinary = findNodeBinary();
   const serverEntry = path.join(context.extensionPath, "dist-server", "index.mjs");
 
-  outputChannel.appendLine(`[t3code] node: ${nodeBinary}`);
-  outputChannel.appendLine(`[t3code] server: ${serverEntry}`);
-  outputChannel.appendLine(`[t3code] ws: ${wsUrl}`);
+  outputChannel.appendLine(`[orqent] node: ${nodeBinary}`);
+  outputChannel.appendLine(`[orqent] server: ${serverEntry}`);
+  outputChannel.appendLine(`[orqent] ws: ${wsUrl}`);
 
   serverProcess = spawn(nodeBinary, [serverEntry], {
     env: {
       ...process.env,
-      T3CODE_PORT: String(port),
-      T3CODE_MODE: "desktop",
-      T3CODE_NO_BROWSER: "1",
-      T3CODE_STATE_DIR: context.globalStorageUri.fsPath,
+      ORQENT_PORT: String(port),
+      ORQENT_MODE: "desktop",
+      ORQENT_NO_BROWSER: "1",
+      ORQENT_STATE_DIR: context.globalStorageUri.fsPath,
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -98,10 +98,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     outputChannel?.append(chunk.toString());
   });
   serverProcess.on("error", (error) => {
-    outputChannel?.appendLine(`[t3code] server error: ${error.message}`);
+    outputChannel?.appendLine(`[orqent] server error: ${error.message}`);
   });
   serverProcess.on("exit", (code, signal) => {
-    outputChannel?.appendLine(`[t3code] server exited (code=${code}, signal=${signal})`);
+    outputChannel?.appendLine(`[orqent] server exited (code=${code}, signal=${signal})`);
   });
 
   chatPanelManager = new ChatPanelManager(context, wsUrl);

@@ -33,7 +33,7 @@ export function injectWebviewBootstrap(
   ].join("; ");
 
   const cspTag = `<meta http-equiv="Content-Security-Policy" content="${csp}" />`;
-  const configScript = `<script nonce="${input.nonce}">window.__T3CODE_WEBVIEW_CONFIG__=${configJson};</script>`;
+  const configScript = `<script nonce="${input.nonce}">window.__ORQENT_WEBVIEW_CONFIG__=${configJson};</script>`;
 
   return html
     .replace(/<script /g, `<script nonce="${input.nonce}" `)
@@ -48,12 +48,12 @@ function fallbackHtml(config: T3CodeWebviewConfig, nonce: string): string {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${nonce}';" />
-    <title>T3 Code</title>
-    <script nonce="${nonce}">window.__T3CODE_WEBVIEW_CONFIG__=${configJson};</script>
+    <title>Orqent</title>
+    <script nonce="${nonce}">window.__ORQENT_WEBVIEW_CONFIG__=${configJson};</script>
   </head>
   <body>
     <p style="font-family:sans-serif;padding:1rem;color:#888">
-      T3 Code webview assets are missing. Run <code>bun run build:webview</code> first.
+      Orqent webview assets are missing. Run <code>bun run build:webview</code> first.
     </p>
   </body>
 </html>`;

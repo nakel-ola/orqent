@@ -112,7 +112,7 @@ describe("chatPanelManager", () => {
       },
     });
 
-    expect(panel.title).toBe("T3 Code - Renamed Thread");
+    expect(panel.title).toBe("Orqent - Renamed Thread");
     expect(panel.webview.postMessage).toHaveBeenCalledWith({
       requestId: "1",
       result: undefined,

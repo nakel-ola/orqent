@@ -42,7 +42,7 @@ describe("vscode shell mode helpers", () => {
   it("returns panel-specific empty-state guidance", () => {
     expect(getThreadPanelEmptyStateCopy("panel")).toEqual({
       title: "No active thread",
-      description: "Open a thread from the T3 Code sidebar to get started.",
+      description: "Open a thread from the Orqent sidebar to get started.",
     });
   });
 });

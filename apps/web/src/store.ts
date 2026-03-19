@@ -24,8 +24,9 @@ export interface AppState {
   threadsHydrated: boolean;
 }
 
-const PERSISTED_STATE_KEY = "t3code:renderer-state:v8";
+const PERSISTED_STATE_KEY = "orqent:renderer-state:v8";
 const LEGACY_PERSISTED_STATE_KEYS = [
+  "t3code:renderer-state:v8",
   "t3code:renderer-state:v7",
   "t3code:renderer-state:v6",
   "t3code:renderer-state:v5",

@@ -22,7 +22,7 @@ export function getThreadPanelEmptyStateCopy(appMode: AppMode): {
   if (isPanelMode(appMode)) {
     return {
       title: "No active thread",
-      description: "Open a thread from the T3 Code sidebar to get started.",
+      description: "Open a thread from the Orqent sidebar to get started.",
     };
   }
 

@@ -59,8 +59,8 @@ const disabledUpdateState: DesktopUpdateState = {
 const webviewConfig =
   typeof window === "undefined"
     ? null
-    : ((window as Window & { __T3CODE_WEBVIEW_CONFIG__?: T3CodeWebviewConfig })
-        .__T3CODE_WEBVIEW_CONFIG__ ?? null);
+    : ((window as Window & { __ORQENT_WEBVIEW_CONFIG__?: T3CodeWebviewConfig })
+        .__ORQENT_WEBVIEW_CONFIG__ ?? null);
 
 let workspaceFolders: WorkspaceFolderEntry[] = [];
 const workspaceFolderListeners = new Set<(folders: WorkspaceFolderEntry[]) => void>();

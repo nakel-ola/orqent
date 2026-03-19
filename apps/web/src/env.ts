@@ -7,7 +7,7 @@ export function readWebviewConfig(): T3CodeWebviewConfig | null {
     return null;
   }
 
-  return window.__T3CODE_WEBVIEW_CONFIG__ ?? null;
+  return window.__ORQENT_WEBVIEW_CONFIG__ ?? null;
 }
 
 export function resolveAppMode(input: {

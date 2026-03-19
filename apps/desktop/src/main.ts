@@ -57,13 +57,15 @@ const UPDATE_GET_STATE_CHANNEL = "desktop:update-get-state";
 const UPDATE_DOWNLOAD_CHANNEL = "desktop:update-download";
 const UPDATE_INSTALL_CHANNEL = "desktop:update-install";
 const STATE_DIR =
-  process.env.T3CODE_STATE_DIR?.trim() || Path.join(OS.homedir(), ".t3", "userdata");
+  process.env.ORQENT_STATE_DIR?.trim() ||
+  process.env.T3CODE_STATE_DIR?.trim() ||
+  Path.join(OS.homedir(), ".t3", "userdata");
 const DESKTOP_SCHEME = "t3";
 const ROOT_DIR = Path.resolve(__dirname, "../../..");
 const isDevelopment = Boolean(process.env.VITE_DEV_SERVER_URL);
-const APP_DISPLAY_NAME = isDevelopment ? "T3 Code (Dev)" : "T3 Code (Alpha)";
-const APP_USER_MODEL_ID = "com.t3tools.t3code";
-const USER_DATA_DIR_NAME = isDevelopment ? "t3code-dev" : "t3code";
+const APP_DISPLAY_NAME = isDevelopment ? "Orqent (Dev)" : "Orqent (Alpha)";
+const APP_USER_MODEL_ID = "com.orqent.app";
+const USER_DATA_DIR_NAME = isDevelopment ? "orqent-dev" : "orqent";
 const LEGACY_USER_DATA_DIR_NAME = isDevelopment ? "T3 Code (Dev)" : "T3 Code (Alpha)";
 const COMMIT_HASH_PATTERN = /^[0-9a-f]{7,40}$/i;
 const COMMIT_HASH_DISPLAY_LENGTH = 12;
@@ -344,8 +346,8 @@ function resolveEmbeddedCommitHash(): string | null {
 
   try {
     const raw = FS.readFileSync(packageJsonPath, "utf8");
-    const parsed = JSON.parse(raw) as { t3codeCommitHash?: unknown };
-    return normalizeCommitHash(parsed.t3codeCommitHash);
+    const parsed = JSON.parse(raw) as { orqentCommitHash?: unknown; t3codeCommitHash?: unknown };
+    return normalizeCommitHash(parsed.orqentCommitHash ?? parsed.t3codeCommitHash);
   } catch {
     return null;
   }
@@ -356,7 +358,9 @@ function resolveAboutCommitHash(): string | null {
     return aboutCommitHashCache;
   }
 
-  const envCommitHash = normalizeCommitHash(process.env.T3CODE_COMMIT_HASH);
+  const envCommitHash = normalizeCommitHash(
+    process.env.ORQENT_COMMIT_HASH ?? process.env.T3CODE_COMMIT_HASH,
+  );
   if (envCommitHash) {
     aboutCommitHashCache = envCommitHash;
     return aboutCommitHashCache;
@@ -440,7 +444,7 @@ function handleFatalStartupError(stage: string, error: unknown): void {
   console.error(`[desktop] fatal startup error (${stage})`, error);
   if (!isQuitting) {
     isQuitting = true;
-    dialog.showErrorBox("T3 Code failed to start", `Stage: ${stage}\n${message}${detail}`);
+    dialog.showErrorBox("Orqent failed to start", `Stage: ${stage}\n${message}${detail}`);
   }
   stopBackend();
   restoreStdIoCapture?.();
@@ -518,7 +522,9 @@ function handleCheckForUpdatesMenuClick(): void {
     isPackaged: app.isPackaged,
     platform: process.platform,
     appImage: process.env.APPIMAGE,
-    disabledByEnv: process.env.T3CODE_DISABLE_AUTO_UPDATE === "1",
+    disabledByEnv:
+      process.env.ORQENT_DISABLE_AUTO_UPDATE === "1" ||
+      process.env.T3CODE_DISABLE_AUTO_UPDATE === "1",
   });
   if (disabledReason) {
     console.info("[desktop-updater] Manual update check requested, but updates are disabled.");
@@ -545,7 +551,7 @@ async function checkForUpdatesFromMenu(): Promise<void> {
     void dialog.showMessageBox({
       type: "info",
       title: "You're up to date!",
-      message: `T3 Code ${updateState.currentVersion} is currently the newest version available.`,
+      message: `Orqent ${updateState.currentVersion} is currently the newest version available.`,
       buttons: ["OK"],
     });
   } else if (updateState.status === "error") {
@@ -737,7 +743,9 @@ function shouldEnableAutoUpdates(): boolean {
       isPackaged: app.isPackaged,
       platform: process.platform,
       appImage: process.env.APPIMAGE,
-      disabledByEnv: process.env.T3CODE_DISABLE_AUTO_UPDATE === "1",
+      disabledByEnv:
+        process.env.ORQENT_DISABLE_AUTO_UPDATE === "1" ||
+        process.env.T3CODE_DISABLE_AUTO_UPDATE === "1",
     }) === null
   );
 }
@@ -822,7 +830,10 @@ function configureAutoUpdater(): void {
   updaterConfigured = true;
 
   const githubToken =
-    process.env.T3CODE_DESKTOP_UPDATE_GITHUB_TOKEN?.trim() || process.env.GH_TOKEN?.trim() || "";
+    process.env.ORQENT_DESKTOP_UPDATE_GITHUB_TOKEN?.trim() ||
+    process.env.T3CODE_DESKTOP_UPDATE_GITHUB_TOKEN?.trim() ||
+    process.env.GH_TOKEN?.trim() ||
+    "";
   if (githubToken) {
     // When a token is provided, re-configure the feed with `private: true` so
     // electron-updater uses the GitHub API (api.github.com) instead of the
@@ -921,11 +932,11 @@ function configureAutoUpdater(): void {
 function backendEnv(): NodeJS.ProcessEnv {
   return {
     ...process.env,
-    T3CODE_MODE: "desktop",
-    T3CODE_NO_BROWSER: "1",
-    T3CODE_PORT: String(backendPort),
-    T3CODE_STATE_DIR: STATE_DIR,
-    T3CODE_AUTH_TOKEN: backendAuthToken,
+    ORQENT_MODE: "desktop",
+    ORQENT_NO_BROWSER: "1",
+    ORQENT_PORT: String(backendPort),
+    ORQENT_STATE_DIR: STATE_DIR,
+    ORQENT_AUTH_TOKEN: backendAuthToken,
   };
 }
 
@@ -1321,7 +1332,7 @@ async function bootstrap(): Promise<void> {
   writeDesktopLogHeader(`reserved backend port via NetService port=${backendPort}`);
   backendAuthToken = Crypto.randomBytes(24).toString("hex");
   backendWsUrl = `ws://127.0.0.1:${backendPort}/?token=${encodeURIComponent(backendAuthToken)}`;
-  process.env.T3CODE_DESKTOP_WS_URL = backendWsUrl;
+  process.env.ORQENT_DESKTOP_WS_URL = backendWsUrl;
   writeDesktopLogHeader(`bootstrap resolved websocket url=${backendWsUrl}`);
 
   registerIpcHandlers();

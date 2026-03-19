@@ -1,15 +1,15 @@
 {
-  "name": "t3code",
-  "displayName": "T3 Code",
+  "name": "orqent",
+  "displayName": "Orqent",
   "version": "0.0.10",
-  "description": "T3 Code VS Code Extension",
+  "description": "Orqent VS Code Extension",
   "categories": [
     "AI",
     "Other"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/pingdotgg/t3code.git"
+    "url": "https://github.com/pingdotgg/orqent.git"
   },
   "publisher": "nakel",
   "type": "module",
@@ -60,22 +60,22 @@
   "contributes": {
     "commands": [
       {
-        "command": "t3code.openPanel",
-        "title": "Open T3 Code",
-        "category": "T3 Code"
+        "command": "orqent.openPanel",
+        "title": "Open Orqent",
+        "category": "Orqent"
       },
       {
-        "command": "t3code.newThread",
+        "command": "orqent.newThread",
         "title": "New Thread",
-        "category": "T3 Code",
+        "category": "Orqent",
         "icon": "$(add)"
       }
     ],
     "menus": {
       "view/title": [
         {
-          "command": "t3code.newThread",
-          "when": "view == t3code.mainView",
+          "command": "orqent.newThread",
+          "when": "view == orqent.mainView",
           "group": "navigation"
         }
       ]
@@ -83,18 +83,18 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "t3code",
-          "title": "T3 Code",
+          "id": "orqent",
+          "title": "Orqent",
           "icon": "assets/logo.svg"
         }
       ]
     },
     "views": {
-      "t3code": [
+      "orqent": [
         {
           "type": "webview",
-          "id": "t3code.mainView",
-          "name": "T3 Code"
+          "id": "orqent.mainView",
+          "name": "Orqent"
         }
       ]
     }

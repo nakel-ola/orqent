@@ -15,6 +15,6 @@ declare global {
   interface Window {
     nativeApi?: NativeApi;
     desktopBridge?: DesktopBridge;
-    __T3CODE_WEBVIEW_CONFIG__?: T3CodeWebviewConfig;
+    __ORQENT_WEBVIEW_CONFIG__?: T3CodeWebviewConfig;
   }
 }
