@@ -1,12 +1,16 @@
 {
   "name": "orqent",
   "displayName": "Orqent",
-  "version": "0.0.10",
+  "version": "0.0.12",
   "description": "Orqent VS Code Extension",
   "categories": [
     "AI",
     "Other"
   ],
+  "homepage": "https://github.com/pingdotgg/orqent",
+  "bugs": {
+    "url": "https://github.com/pingdotgg/orqent/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/pingdotgg/orqent.git"
@@ -21,10 +25,10 @@
     "build": "bun run build:extension && bun run build:webview && bun run build:server-runtime",
     "build:extension": "tsdown",
     "build:webview": "vite build --config vite.webview.config.ts",
-    "build:server-runtime": "rm -rf dist-server && mkdir -p dist-server && cp -R ../server/dist/. dist-server/",
+    "build:server-runtime": "bun run scripts/build-server-runtime.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
-    "package": "vsce package --no-dependencies"
+    "package": "vsce package --no-dependencies --skip-license"
   },
   "dependencies": {
     "@effect/platform-node": "catalog:",
@@ -102,6 +106,7 @@
   "activationEvents": [
     "onStartupFinished"
   ],
+  "icon": "assets/logo.png",
   "engines": {
     "vscode": "^1.95.0"
   }
