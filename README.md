@@ -15,6 +15,28 @@ You can also just install the desktop app. It's cooler.
 
 Install the [desktop app from the Releases page](https://github.com/pingdotgg/t3code/releases)
 
+## VS Code extension
+
+Build the extension:
+
+```bash
+bun run build:vscode
+```
+
+Run it in a VS Code Extension Development Host:
+
+```bash
+bun run dev:vscode
+```
+
+Then open the repo in VS Code and launch the extension host from the Run and Debug panel.
+
+Package a `.vsix`:
+
+```bash
+bun run package:vscode
+```
+
 ## Some notes
 
 We are very very early in this project. Expect bugs.

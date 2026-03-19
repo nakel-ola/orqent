@@ -116,8 +116,14 @@ export function createWsNativeApi(): NativeApi {
       writeFile: (input) => transport.request(WS_METHODS.projectsWriteFile, input),
     },
     shell: {
-      openInEditor: (cwd, editor) =>
-        transport.request(WS_METHODS.shellOpenInEditor, { cwd, editor }),
+      openInEditor: async (cwd, editor) => {
+        if (typeof window.desktopBridge?.openInEditor === "function") {
+          await window.desktopBridge.openInEditor(cwd, editor);
+          return;
+        }
+
+        return transport.request(WS_METHODS.shellOpenInEditor, { cwd, editor });
+      },
       openExternal: async (url) => {
         if (window.desktopBridge) {
           const opened = await window.desktopBridge.openExternal(url);
@@ -152,7 +158,10 @@ export function createWsNativeApi(): NativeApi {
         position?: { x: number; y: number },
       ): Promise<T | null> => {
         if (window.desktopBridge) {
-          return window.desktopBridge.showContextMenu(items, position) as Promise<T | null>;
+          const result = await window.desktopBridge.showContextMenu(items, position);
+          if (result !== undefined) {
+            return result as T | null;
+          }
         }
         return showContextMenuFallback(items, position);
       },

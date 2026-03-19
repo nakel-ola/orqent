@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": ["node", "vite/client"],
+    "paths": {
+      "~/*": ["../web/src/*"]
+    }
+  },
+  "include": ["src", "webview/src", "../web/src", "tsdown.config.ts", "vite.webview.config.ts"]
+}

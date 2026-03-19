@@ -381,4 +381,66 @@ describe("wsNativeApi", () => {
       { x: 20, y: 30 },
     );
   });
+
+  it("falls back to the DOM context menu when desktop bridge returns undefined", async () => {
+    const showContextMenu = vi.fn().mockResolvedValue(undefined);
+    showContextMenuFallbackMock.mockResolvedValue("rename");
+    Object.defineProperty(getWindowForTest(), "desktopBridge", {
+      configurable: true,
+      writable: true,
+      value: {
+        showContextMenu,
+      },
+    });
+
+    const { createWsNativeApi } = await import("./wsNativeApi");
+    const api = createWsNativeApi();
+    await api.contextMenu.show([{ id: "rename", label: "Rename" }], { x: 40, y: 50 });
+
+    expect(showContextMenu).toHaveBeenCalledWith([{ id: "rename", label: "Rename" }], {
+      x: 40,
+      y: 50,
+    });
+    expect(showContextMenuFallbackMock).toHaveBeenCalledWith([{ id: "rename", label: "Rename" }], {
+      x: 40,
+      y: 50,
+    });
+  });
+
+  it("prefers the desktop bridge for openInEditor when available", async () => {
+    const openInEditor = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(getWindowForTest(), "desktopBridge", {
+      configurable: true,
+      writable: true,
+      value: {
+        openInEditor,
+      },
+    });
+
+    const { createWsNativeApi } = await import("./wsNativeApi");
+    const api = createWsNativeApi();
+
+    await api.shell.openInEditor("/tmp/file.ts:12:4", "vscode");
+
+    expect(openInEditor).toHaveBeenCalledWith("/tmp/file.ts:12:4", "vscode");
+    expect(requestMock).not.toHaveBeenCalledWith(WS_METHODS.shellOpenInEditor, expect.anything());
+  });
+
+  it("falls back to the websocket shell method when bridge openInEditor is absent", async () => {
+    Object.defineProperty(getWindowForTest(), "desktopBridge", {
+      configurable: true,
+      writable: true,
+      value: {},
+    });
+
+    const { createWsNativeApi } = await import("./wsNativeApi");
+    const api = createWsNativeApi();
+
+    await api.shell.openInEditor("/tmp/file.ts", "vscode");
+
+    expect(requestMock).toHaveBeenCalledWith(WS_METHODS.shellOpenInEditor, {
+      cwd: "/tmp/file.ts",
+      editor: "vscode",
+    });
+  });
 });

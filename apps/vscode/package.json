@@ -1,0 +1,108 @@
+{
+  "name": "t3code",
+  "displayName": "T3 Code",
+  "version": "0.0.10",
+  "description": "T3 Code VS Code Extension",
+  "categories": [
+    "AI",
+    "Other"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pingdotgg/t3code.git"
+  },
+  "publisher": "nakel",
+  "type": "module",
+  "main": "./dist/extension.cjs",
+  "scripts": {
+    "dev": "bun run build:server-runtime && bun run --parallel dev:extension dev:webview",
+    "dev:extension": "tsdown --watch",
+    "dev:webview": "vite build --config vite.webview.config.ts --watch",
+    "build": "bun run build:extension && bun run build:webview && bun run build:server-runtime",
+    "build:extension": "tsdown",
+    "build:webview": "vite build --config vite.webview.config.ts",
+    "build:server-runtime": "rm -rf dist-server && mkdir -p dist-server && cp -R ../server/dist/. dist-server/",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "package": "vsce package --no-dependencies"
+  },
+  "dependencies": {
+    "@effect/platform-node": "catalog:",
+    "@effect/sql-sqlite-bun": "catalog:",
+    "@pierre/diffs": "^1.1.0-beta.16",
+    "effect": "catalog:",
+    "node-pty": "^1.1.0",
+    "open": "^10.1.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@rolldown/plugin-babel": "^0.2.0",
+    "@t3tools/contracts": "workspace:*",
+    "@tailwindcss/vite": "^4.0.0",
+    "@tanstack/react-query": "^5.90.0",
+    "@tanstack/react-router": "^1.160.2",
+    "@tanstack/router-plugin": "^1.161.0",
+    "@types/node": "catalog:",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/vscode": "^1.95.0",
+    "@vitejs/plugin-react": "^6.0.0",
+    "@vscode/vsce": "^3.0.0",
+    "@xterm/xterm": "^6.0.0",
+    "babel-plugin-react-compiler": "^19.0.0-beta-e552027-20250112",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vite": "^8.0.0",
+    "vitest": "catalog:"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "t3code.openPanel",
+        "title": "Open T3 Code",
+        "category": "T3 Code"
+      },
+      {
+        "command": "t3code.newThread",
+        "title": "New Thread",
+        "category": "T3 Code",
+        "icon": "$(add)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "t3code.newThread",
+          "when": "view == t3code.mainView",
+          "group": "navigation"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "t3code",
+          "title": "T3 Code",
+          "icon": "assets/logo.svg"
+        }
+      ]
+    },
+    "views": {
+      "t3code": [
+        {
+          "type": "webview",
+          "id": "t3code.mainView",
+          "name": "T3 Code"
+        }
+      ]
+    }
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "engines": {
+    "vscode": "^1.95.0"
+  }
+}

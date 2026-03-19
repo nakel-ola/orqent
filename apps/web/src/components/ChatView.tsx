@@ -35,7 +35,7 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { gitBranchesQueryOptions, gitCreateWorktreeMutationOptions } from "~/lib/gitReactQuery";
 import { projectSearchEntriesQueryOptions } from "~/lib/projectReactQuery";
 import { serverConfigQueryOptions, serverQueryKeys } from "~/lib/serverReactQuery";
-import { isElectron } from "../env";
+import { appMode, isElectron } from "../env";
 import { parseDiffRouteSearch, stripDiffSearchParams } from "../diffRouteSearch";
 import {
   clampCollapsedComposerCursor,
@@ -142,6 +142,7 @@ import { ComposerPromptEditor, type ComposerPromptEditorHandle } from "./Compose
 import { PullRequestThreadDialog } from "./PullRequestThreadDialog";
 import { MessagesTimeline } from "./chat/MessagesTimeline";
 import { ChatHeader } from "./chat/ChatHeader";
+import { ChatThreadActions } from "./chat/ChatThreadActions";
 import { buildExpandedImagePreview, ExpandedImagePreview } from "./chat/ExpandedImagePreview";
 import { AVAILABLE_PROVIDER_OPTIONS, ProviderModelPicker } from "./chat/ProviderModelPicker";
 import { ComposerCommandItem, ComposerCommandMenu } from "./chat/ComposerCommandMenu";
@@ -170,6 +171,11 @@ import {
   SendPhase,
 } from "./ChatView.logic";
 import { useLocalStorage } from "~/hooks/useLocalStorage";
+import {
+  getThreadPanelEmptyStateCopy,
+  isPanelMode,
+  shouldRenderThreadSidebarTrigger,
+} from "../../../vscode/webview/src/shellMode";
 
 const ATTACHMENT_PREVIEW_HANDOFF_TTL_MS = 5000;
 const IMAGE_SIZE_LIMIT_LABEL = `${Math.round(PROVIDER_SEND_TURN_MAX_IMAGE_BYTES / (1024 * 1024))}MB`;
@@ -178,6 +184,7 @@ const IMAGE_ONLY_BOOTSTRAP_PROMPT =
 const EMPTY_ACTIVITIES: OrchestrationThreadActivity[] = [];
 const EMPTY_KEYBINDINGS: ResolvedKeybindingsConfig = [];
 const EMPTY_PROJECT_ENTRIES: ProjectEntry[] = [];
+const THREAD_EMPTY_STATE_COPY = getThreadPanelEmptyStateCopy(appMode);
 const EMPTY_AVAILABLE_EDITORS: EditorId[] = [];
 const EMPTY_PROVIDER_STATUSES: ServerProviderStatus[] = [];
 const EMPTY_PENDING_USER_INPUT_ANSWERS: Record<string, PendingUserInputDraftAnswer> = {};
@@ -464,6 +471,16 @@ export default function ChatView({ threadId }: ChatViewProps) {
   const activeLatestTurn = activeThread?.latestTurn ?? null;
   const latestTurnSettled = isLatestTurnSettled(activeLatestTurn, activeThread?.session ?? null);
   const activeProject = projects.find((p) => p.id === activeThread?.projectId);
+
+  useEffect(() => {
+    if (typeof window.desktopBridge?.updatePanelTitle !== "function") {
+      return;
+    }
+
+    void window.desktopBridge
+      .updatePanelTitle(activeThread?.title ?? "New Thread", activeProject?.name ?? "")
+      .catch(() => undefined);
+  }, [activeProject?.name, activeThread?.title]);
 
   const openPullRequestDialog = useCallback(
     (reference?: string) => {
@@ -3381,12 +3398,13 @@ export default function ChatView({ threadId }: ChatViewProps) {
     }
     void onRevertToTurnCount(targetTurnCount);
   };
+  const showPanelThreadActions = isPanelMode(appMode);
 
   // Empty state: no active thread
   if (!activeThread) {
     return (
       <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-background text-muted-foreground/40">
-        {!isElectron && (
+        {shouldRenderThreadSidebarTrigger({ appMode, isElectron }) && (
           <header className="border-b border-border px-3 py-2 md:hidden">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="size-7 shrink-0" />
@@ -3401,46 +3419,76 @@ export default function ChatView({ threadId }: ChatViewProps) {
         )}
         <div className="flex flex-1 items-center justify-center">
           <div className="text-center">
-            <p className="text-sm">Select a thread or create a new one to get started.</p>
+            {isPanelMode(appMode) && (
+              <p className="text-sm font-medium text-foreground">{THREAD_EMPTY_STATE_COPY.title}</p>
+            )}
+            <p className="mt-1 text-sm">{THREAD_EMPTY_STATE_COPY.description}</p>
           </div>
         </div>
       </div>
     );
   }
 
+  const threadActions = (
+    <ChatThreadActions
+      activeThreadId={activeThread.id}
+      activeProjectName={activeProject?.name}
+      isGitRepo={isGitRepo}
+      openInCwd={activeThread.worktreePath ?? activeProject?.cwd ?? null}
+      activeProjectScripts={activeProject?.scripts}
+      preferredScriptId={
+        activeProject ? (lastInvokedScriptByProjectId[activeProject.id] ?? null) : null
+      }
+      keybindings={keybindings}
+      availableEditors={availableEditors}
+      diffToggleShortcutLabel={diffPanelShortcutLabel}
+      gitCwd={gitCwd}
+      diffOpen={diffOpen}
+      onRunProjectScript={(script) => {
+        void runProjectScript(script);
+      }}
+      onAddProjectScript={saveProjectScript}
+      onUpdateProjectScript={updateProjectScript}
+      onDeleteProjectScript={deleteProjectScript}
+      onToggleDiff={onToggleDiff}
+    />
+  );
+
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden bg-background">
-      {/* Top bar */}
-      <header
-        className={cn(
-          "border-b border-border px-3 sm:px-5",
-          isElectron ? "drag-region flex h-[52px] items-center" : "py-2 sm:py-3",
-        )}
-      >
-        <ChatHeader
-          activeThreadId={activeThread.id}
-          activeThreadTitle={activeThread.title}
-          activeProjectName={activeProject?.name}
-          isGitRepo={isGitRepo}
-          openInCwd={activeThread.worktreePath ?? activeProject?.cwd ?? null}
-          activeProjectScripts={activeProject?.scripts}
-          preferredScriptId={
-            activeProject ? (lastInvokedScriptByProjectId[activeProject.id] ?? null) : null
-          }
-          keybindings={keybindings}
-          availableEditors={availableEditors}
-          diffToggleShortcutLabel={diffPanelShortcutLabel}
-          gitCwd={gitCwd}
-          diffOpen={diffOpen}
-          onRunProjectScript={(script) => {
-            void runProjectScript(script);
-          }}
-          onAddProjectScript={saveProjectScript}
-          onUpdateProjectScript={updateProjectScript}
-          onDeleteProjectScript={deleteProjectScript}
-          onToggleDiff={onToggleDiff}
-        />
-      </header>
+      {!showPanelThreadActions && (
+        <header
+          className={cn(
+            "border-b border-border px-3 sm:px-5",
+            isElectron ? "drag-region flex h-[52px] items-center" : "py-2 sm:py-3",
+          )}
+        >
+          <ChatHeader
+            activeThreadId={activeThread.id}
+            activeThreadTitle={activeThread.title}
+            activeProjectName={activeProject?.name}
+            showThreadSidebarTrigger={shouldRenderThreadSidebarTrigger({ appMode, isElectron })}
+            isGitRepo={isGitRepo}
+            openInCwd={activeThread.worktreePath ?? activeProject?.cwd ?? null}
+            activeProjectScripts={activeProject?.scripts}
+            preferredScriptId={
+              activeProject ? (lastInvokedScriptByProjectId[activeProject.id] ?? null) : null
+            }
+            keybindings={keybindings}
+            availableEditors={availableEditors}
+            diffToggleShortcutLabel={diffPanelShortcutLabel}
+            gitCwd={gitCwd}
+            diffOpen={diffOpen}
+            onRunProjectScript={(script) => {
+              void runProjectScript(script);
+            }}
+            onAddProjectScript={saveProjectScript}
+            onUpdateProjectScript={updateProjectScript}
+            onDeleteProjectScript={deleteProjectScript}
+            onToggleDiff={onToggleDiff}
+          />
+        </header>
+      )}
 
       {/* Error banner */}
       <ProviderHealthBanner status={activeProviderStatus} />
@@ -4002,11 +4050,19 @@ export default function ChatView({ threadId }: ChatViewProps) {
               threadId={activeThread.id}
               onEnvModeChange={onEnvModeChange}
               envLocked={envLocked}
+              middleContent={
+                showPanelThreadActions ? <div className="min-w-0">{threadActions}</div> : undefined
+              }
               onComposerFocusRequest={scheduleComposerFocus}
               {...(canCheckoutPullRequestIntoThread
                 ? { onCheckoutPullRequestRequest: openPullRequestDialog }
                 : {})}
             />
+          )}
+          {showPanelThreadActions && !isGitRepo && (
+            <div className="mx-auto flex w-full max-w-3xl justify-center px-5 pb-3 pt-1">
+              {threadActions}
+            </div>
           )}
           {pullRequestDialogState ? (
             <PullRequestThreadDialog
