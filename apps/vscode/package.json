@@ -1,11 +1,25 @@
 {
   "name": "orqent",
   "displayName": "Orqent",
-  "version": "0.0.12",
-  "description": "Orqent VS Code Extension",
+  "version": "0.0.13",
+  "description": "AI coding assistant for VS Code with thread-based chat, local Codex workflows, and in-editor file navigation.",
   "categories": [
     "AI",
     "Other"
+  ],
+  "keywords": [
+    "agent",
+    "ai",
+    "chat",
+    "code assistant",
+    "code generation",
+    "codex",
+    "coding assistant",
+    "developer tools",
+    "git",
+    "productivity",
+    "terminal",
+    "workspace"
   ],
   "homepage": "https://github.com/pingdotgg/orqent",
   "bugs": {
@@ -13,7 +27,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/pingdotgg/orqent.git"
+    "url": "https://github.com/pingdotgg/orqent.git",
+    "directory": "apps/vscode"
   },
   "publisher": "nakel",
   "type": "module",

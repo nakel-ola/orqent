@@ -1,29 +1,29 @@
 # Orqent
 
-Use Orqent inside VS Code with a dedicated sidebar, thread panels, and the same local agent workflow used by the main app.
+Orqent is an AI coding assistant for VS Code built for local, workspace-aware coding sessions.
 
-The extension runs a bundled local server runtime, renders the Orqent webview UI inside VS Code, and keeps thread navigation in the Activity Bar while opening conversations in focused editor panels.
+It gives you a dedicated sidebar for thread navigation, thread-based chat panels inside the editor, local Codex-powered workflows, and direct file opening in the same VS Code window.
 
 ---
 
 ## Features
 
-- **Sidebar view**: browse workspace threads from the `Orqent` Activity Bar view
-- **Thread panels**: open each thread in a dedicated VS Code tab without spawning a separate app window
-- **New thread flow**: create threads directly from the sidebar title actions
-- **In-editor file opening**: file links from chat open in the same VS Code window
-- **Bundled runtime**: ships with the extension-side server runtime and webview assets
-- **Local-first workflow**: designed for running against your current workspace and local tools
+- **AI coding assistant in VS Code**: keep agent conversations inside your editor instead of switching to a separate app
+- **Thread-based chat**: organize work by thread and open each conversation in its own focused editor panel
+- **Workspace-aware sidebar**: browse project threads from the `Orqent` Activity Bar view
+- **In-editor file navigation**: open file references from chat directly in the current VS Code window
+- **Local Codex workflow**: connect Orqent to a real local workspace with local tools and project context
+- **Bundled runtime**: ships with the required webview UI and extension-side runtime assets
 
 ---
 
 ## Quick Start
 
-1. Install the extension or load it from a local VSIX.
+1. Install the extension.
 2. Open a workspace folder in VS Code.
 3. Click the **Orqent** icon in the Activity Bar.
 4. Create a new thread from the sidebar.
-5. Open the thread and start chatting in the panel view.
+5. Open the thread and start a coding conversation in the panel view.
 
 ---
 
@@ -42,4 +42,4 @@ The extension runs a bundled local server runtime, renders the Orqent webview UI
 - A local workspace folder opened in VS Code
 - Codex CLI installed and authenticated
 
-Orqent works best when pointed at a real project folder so it can open files, inspect the workspace, and manage threads per project.
+Orqent works best with a real project folder so it can inspect the workspace, open files, and keep AI-assisted coding threads tied to the project you are working on.
