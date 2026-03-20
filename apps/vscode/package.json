@@ -1,7 +1,7 @@
 {
   "name": "orqent",
   "displayName": "Orqent",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "AI coding assistant for VS Code with thread-based chat, local Codex workflows, and in-editor file navigation.",
   "categories": [
     "AI",

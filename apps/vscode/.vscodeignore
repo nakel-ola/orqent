@@ -1,0 +1,31 @@
+# Source files
+src/
+webview/
+scripts/
+
+# Config files
+tsconfig.json
+tsconfig.tsbuildinfo
+tsdown.config.ts
+vite.webview.config.ts
+vitest.config.ts
+turbo.jsonc
+
+# Dev artifacts
+node_modules/
+.vscode/
+.git/
+*.vsix
+.turbo/
+
+# Sourcemaps (saves ~25MB)
+**/*.map
+
+# Unused dist-server artifacts
+# Only index.mjs is spawned; CJS build and old tsdown chunks are not needed
+dist-server/index.cjs
+# Web client for browser access — extension uses dist-webview/ instead
+dist-server/client/
+
+# Misc
+README.md
