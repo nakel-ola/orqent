@@ -24,6 +24,7 @@ import type {
   ProjectWriteFileInput,
   ProjectWriteFileResult,
 } from "./project";
+import type { ProjectId, ThreadId } from "./baseSchemas";
 import type { ServerConfig } from "./server";
 import type {
   TerminalClearInput,
@@ -44,6 +45,8 @@ import type {
   OrchestrationGetTurnDiffResult,
   OrchestrationEvent,
   OrchestrationReadModel,
+  ProviderInteractionMode,
+  RuntimeMode,
 } from "./orchestration";
 import { EditorId } from "./editor";
 
@@ -94,6 +97,37 @@ export interface DesktopUpdateActionResult {
   state: DesktopUpdateState;
 }
 
+export type T3CodeWebviewMode = "full" | "sidebar" | "panel";
+
+export interface WorkspaceFolderEntry {
+  path: string;
+  name: string;
+}
+
+export interface DesktopDraftContext {
+  projectId: ProjectId;
+  createdAt: string;
+  branch: string | null;
+  worktreePath: string | null;
+  envMode: "local" | "worktree";
+  runtimeMode: RuntimeMode;
+  interactionMode: ProviderInteractionMode;
+}
+
+export interface DesktopOpenThreadPayload {
+  threadId: ThreadId;
+  title: string;
+  projectName: string;
+  draftContext: DesktopDraftContext | null;
+}
+
+export interface T3CodeWebviewConfig {
+  mode: T3CodeWebviewMode;
+  threadId: ThreadId | null;
+  draftContext: DesktopDraftContext | null;
+  wsUrl: string;
+}
+
 export interface DesktopBridge {
   getWsUrl: () => string | null;
   pickFolder: () => Promise<string | null>;
@@ -109,6 +143,9 @@ export interface DesktopBridge {
   downloadUpdate: () => Promise<DesktopUpdateActionResult>;
   installUpdate: () => Promise<DesktopUpdateActionResult>;
   onUpdateState: (listener: (state: DesktopUpdateState) => void) => () => void;
+  openThread?: (payload: DesktopOpenThreadPayload) => Promise<void>;
+  updatePanelTitle?: (title: string, projectName: string) => Promise<void>;
+  openInEditor?: (path: string, editor: EditorId) => Promise<void>;
 }
 
 export interface NativeApi {

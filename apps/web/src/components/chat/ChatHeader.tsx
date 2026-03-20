@@ -5,19 +5,16 @@ import {
   type ThreadId,
 } from "@t3tools/contracts";
 import { memo } from "react";
-import GitActionsControl from "../GitActionsControl";
-import { DiffIcon } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
-import ProjectScriptsControl, { type NewProjectScriptInput } from "../ProjectScriptsControl";
-import { Toggle } from "../ui/toggle";
 import { SidebarTrigger } from "../ui/sidebar";
-import { OpenInPicker } from "./OpenInPicker";
+import { type NewProjectScriptInput } from "../ProjectScriptsControl";
+import { ChatThreadActions } from "./ChatThreadActions";
 
 interface ChatHeaderProps {
   activeThreadId: ThreadId;
   activeThreadTitle: string;
   activeProjectName: string | undefined;
+  showThreadSidebarTrigger: boolean;
   isGitRepo: boolean;
   openInCwd: string | null;
   activeProjectScripts: ProjectScript[] | undefined;
@@ -38,6 +35,7 @@ export const ChatHeader = memo(function ChatHeader({
   activeThreadId,
   activeThreadTitle,
   activeProjectName,
+  showThreadSidebarTrigger,
   isGitRepo,
   openInCwd,
   activeProjectScripts,
@@ -56,7 +54,7 @@ export const ChatHeader = memo(function ChatHeader({
   return (
     <div className="flex min-w-0 flex-1 items-center gap-2">
       <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden sm:gap-3">
-        <SidebarTrigger className="size-7 shrink-0 md:hidden" />
+        {showThreadSidebarTrigger && <SidebarTrigger className="size-7 shrink-0 md:hidden" />}
         <h2
           className="min-w-0 shrink truncate text-sm font-medium text-foreground"
           title={activeThreadTitle}
@@ -74,51 +72,25 @@ export const ChatHeader = memo(function ChatHeader({
           </Badge>
         )}
       </div>
-      <div className="@container/header-actions flex min-w-0 flex-1 items-center justify-end gap-2 @sm/header-actions:gap-3">
-        {activeProjectScripts && (
-          <ProjectScriptsControl
-            scripts={activeProjectScripts}
-            keybindings={keybindings}
-            preferredScriptId={preferredScriptId}
-            onRunScript={onRunProjectScript}
-            onAddScript={onAddProjectScript}
-            onUpdateScript={onUpdateProjectScript}
-            onDeleteScript={onDeleteProjectScript}
-          />
-        )}
-        {activeProjectName && (
-          <OpenInPicker
-            keybindings={keybindings}
-            availableEditors={availableEditors}
-            openInCwd={openInCwd}
-          />
-        )}
-        {activeProjectName && <GitActionsControl gitCwd={gitCwd} activeThreadId={activeThreadId} />}
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <Toggle
-                className="shrink-0"
-                pressed={diffOpen}
-                onPressedChange={onToggleDiff}
-                aria-label="Toggle diff panel"
-                variant="outline"
-                size="xs"
-                disabled={!isGitRepo}
-              >
-                <DiffIcon className="size-3" />
-              </Toggle>
-            }
-          />
-          <TooltipPopup side="bottom">
-            {!isGitRepo
-              ? "Diff panel is unavailable because this project is not a git repository."
-              : diffToggleShortcutLabel
-                ? `Toggle diff panel (${diffToggleShortcutLabel})`
-                : "Toggle diff panel"}
-          </TooltipPopup>
-        </Tooltip>
-      </div>
+      <ChatThreadActions
+        activeThreadId={activeThreadId}
+        activeProjectName={activeProjectName}
+        isGitRepo={isGitRepo}
+        openInCwd={openInCwd}
+        activeProjectScripts={activeProjectScripts}
+        preferredScriptId={preferredScriptId}
+        keybindings={keybindings}
+        availableEditors={availableEditors}
+        diffToggleShortcutLabel={diffToggleShortcutLabel}
+        gitCwd={gitCwd}
+        diffOpen={diffOpen}
+        onRunProjectScript={onRunProjectScript}
+        onAddProjectScript={onAddProjectScript}
+        onUpdateProjectScript={onUpdateProjectScript}
+        onDeleteProjectScript={onDeleteProjectScript}
+        onToggleDiff={onToggleDiff}
+        className="flex-1"
+      />
     </div>
   );
 });

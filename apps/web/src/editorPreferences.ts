@@ -1,8 +1,9 @@
 import { EDITORS, EditorId, NativeApi } from "@t3tools/contracts";
 import { getLocalStorageItem, setLocalStorageItem, useLocalStorage } from "./hooks/useLocalStorage";
 import { useMemo } from "react";
+import { isVSCodeWebview } from "./env";
 
-const LAST_EDITOR_KEY = "t3code:last-editor";
+const LAST_EDITOR_KEY = "orqent:last-editor";
 
 export function usePreferredEditor(availableEditors: ReadonlyArray<EditorId>) {
   const [lastEditor, setLastEditor] = useLocalStorage(LAST_EDITOR_KEY, null, EditorId);
@@ -27,6 +28,11 @@ export function resolveAndPersistPreferredEditor(
 }
 
 export async function openInPreferredEditor(api: NativeApi, targetPath: string): Promise<EditorId> {
+  if (isVSCodeWebview && typeof window !== "undefined" && window.desktopBridge?.openInEditor) {
+    await api.shell.openInEditor(targetPath, "vscode");
+    return "vscode";
+  }
+
   const { availableEditors } = await api.server.getConfig();
   const editor = resolveAndPersistPreferredEditor(availableEditors);
   if (!editor) throw new Error("No available editors found.");

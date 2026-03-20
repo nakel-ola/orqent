@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@source ".";
+@source "../../vscode/webview/src";
 
 @custom-variant dark (&:is(.dark, .dark *));
 

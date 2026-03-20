@@ -1,12 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { isElectron } from "../env";
+import { appMode, isElectron } from "../env";
 import { SidebarTrigger } from "../components/ui/sidebar";
+import {
+  getThreadPanelEmptyStateCopy,
+  isPanelMode,
+  shouldRenderThreadSidebarTrigger,
+} from "../../../vscode/webview/src/shellMode";
 
 function ChatIndexRouteView() {
+  const emptyStateCopy = getThreadPanelEmptyStateCopy(appMode);
+
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-background text-muted-foreground/40">
-      {!isElectron && (
+      {shouldRenderThreadSidebarTrigger({ appMode, isElectron }) && (
         <header className="border-b border-border px-3 py-2 md:hidden">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="size-7 shrink-0" />
@@ -23,7 +30,10 @@ function ChatIndexRouteView() {
 
       <div className="flex flex-1 items-center justify-center">
         <div className="text-center">
-          <p className="text-sm">Select a thread or create a new one to get started.</p>
+          {isPanelMode(appMode) && (
+            <p className="text-sm font-medium text-foreground">{emptyStateCopy.title}</p>
+          )}
+          <p className="mt-1 text-sm">{emptyStateCopy.description}</p>
         </div>
       </div>
     </div>

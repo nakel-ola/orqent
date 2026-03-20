@@ -1,0 +1,128 @@
+{
+  "name": "orqent",
+  "displayName": "Orqent",
+  "version": "0.0.13",
+  "description": "AI coding assistant for VS Code with thread-based chat, local Codex workflows, and in-editor file navigation.",
+  "categories": [
+    "AI",
+    "Other"
+  ],
+  "keywords": [
+    "agent",
+    "ai",
+    "chat",
+    "code assistant",
+    "code generation",
+    "codex",
+    "coding assistant",
+    "developer tools",
+    "git",
+    "productivity",
+    "terminal",
+    "workspace"
+  ],
+  "homepage": "https://github.com/pingdotgg/orqent",
+  "bugs": {
+    "url": "https://github.com/pingdotgg/orqent/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pingdotgg/orqent.git",
+    "directory": "apps/vscode"
+  },
+  "publisher": "nakel",
+  "type": "module",
+  "main": "./dist/extension.cjs",
+  "scripts": {
+    "dev": "bun run build:server-runtime && bun run --parallel dev:extension dev:webview",
+    "dev:extension": "tsdown --watch",
+    "dev:webview": "vite build --config vite.webview.config.ts --watch",
+    "build": "bun run build:extension && bun run build:webview && bun run build:server-runtime",
+    "build:extension": "tsdown",
+    "build:webview": "vite build --config vite.webview.config.ts",
+    "build:server-runtime": "bun run scripts/build-server-runtime.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "package": "vsce package --no-dependencies --skip-license"
+  },
+  "dependencies": {
+    "@effect/platform-node": "catalog:",
+    "@effect/sql-sqlite-bun": "catalog:",
+    "@pierre/diffs": "^1.1.0-beta.16",
+    "effect": "catalog:",
+    "node-pty": "^1.1.0",
+    "open": "^10.1.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@rolldown/plugin-babel": "^0.2.0",
+    "@t3tools/contracts": "workspace:*",
+    "@tailwindcss/vite": "^4.0.0",
+    "@tanstack/react-query": "^5.90.0",
+    "@tanstack/react-router": "^1.160.2",
+    "@tanstack/router-plugin": "^1.161.0",
+    "@types/node": "catalog:",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/vscode": "^1.95.0",
+    "@vitejs/plugin-react": "^6.0.0",
+    "@vscode/vsce": "^3.0.0",
+    "@xterm/xterm": "^6.0.0",
+    "babel-plugin-react-compiler": "^19.0.0-beta-e552027-20250112",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vite": "^8.0.0",
+    "vitest": "catalog:"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "orqent.openPanel",
+        "title": "Open Orqent",
+        "category": "Orqent"
+      },
+      {
+        "command": "orqent.newThread",
+        "title": "New Thread",
+        "category": "Orqent",
+        "icon": "$(add)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "orqent.newThread",
+          "when": "view == orqent.mainView",
+          "group": "navigation"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "orqent",
+          "title": "Orqent",
+          "icon": "assets/logo.svg"
+        }
+      ]
+    },
+    "views": {
+      "orqent": [
+        {
+          "type": "webview",
+          "id": "orqent.mainView",
+          "name": "Orqent"
+        }
+      ]
+    }
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "icon": "assets/logo.png",
+  "engines": {
+    "vscode": "^1.95.0"
+  }
+}

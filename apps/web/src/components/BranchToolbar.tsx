@@ -1,6 +1,6 @@
 import type { ThreadId } from "@t3tools/contracts";
 import { FolderIcon, GitForkIcon } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, type ReactNode } from "react";
 
 import { newCommandId } from "../lib/utils";
 import { readNativeApi } from "../nativeApi";
@@ -25,6 +25,7 @@ interface BranchToolbarProps {
   envLocked: boolean;
   onCheckoutPullRequestRequest?: (reference: string) => void;
   onComposerFocusRequest?: () => void;
+  middleContent?: ReactNode;
 }
 
 export default function BranchToolbar({
@@ -33,6 +34,7 @@ export default function BranchToolbar({
   envLocked,
   onCheckoutPullRequestRequest,
   onComposerFocusRequest,
+  middleContent,
 }: BranchToolbarProps) {
   const threads = useStore((store) => store.threads);
   const projects = useStore((store) => store.projects);
@@ -107,6 +109,75 @@ export default function BranchToolbar({
   );
 
   if (!activeThreadId || !activeProject) return null;
+
+  if (middleContent) {
+    return (
+      <div className="mx-auto grid w-full max-w-3xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-5 pb-3 pt-1">
+        <div className="min-w-0 justify-self-start">
+          {envLocked || activeWorktreePath ? (
+            <span className="inline-flex items-center gap-1 border border-transparent px-[calc(--spacing(3)-1px)] text-sm font-medium text-muted-foreground/70 sm:text-xs">
+              {activeWorktreePath ? (
+                <>
+                  <GitForkIcon className="size-3" />
+                  Worktree
+                </>
+              ) : (
+                <>
+                  <FolderIcon className="size-3" />
+                  Local
+                </>
+              )}
+            </span>
+          ) : (
+            <Select
+              value={effectiveEnvMode}
+              onValueChange={(value) => onEnvModeChange(value as EnvMode)}
+              items={envModeItems}
+            >
+              <SelectTrigger variant="ghost" size="xs" className="font-medium">
+                {effectiveEnvMode === "worktree" ? (
+                  <GitForkIcon className="size-3" />
+                ) : (
+                  <FolderIcon className="size-3" />
+                )}
+                <SelectValue />
+              </SelectTrigger>
+              <SelectPopup>
+                <SelectItem value="local">
+                  <span className="inline-flex items-center gap-1.5">
+                    <FolderIcon className="size-3" />
+                    Local
+                  </span>
+                </SelectItem>
+                <SelectItem value="worktree">
+                  <span className="inline-flex items-center gap-1.5">
+                    <GitForkIcon className="size-3" />
+                    New worktree
+                  </span>
+                </SelectItem>
+              </SelectPopup>
+            </Select>
+          )}
+        </div>
+
+        <div className="min-w-0 justify-self-center">{middleContent}</div>
+
+        <div className="min-w-0 justify-self-end">
+          <BranchToolbarBranchSelector
+            activeProjectCwd={activeProject.cwd}
+            activeThreadBranch={activeThreadBranch}
+            activeWorktreePath={activeWorktreePath}
+            branchCwd={branchCwd}
+            effectiveEnvMode={effectiveEnvMode}
+            envLocked={envLocked}
+            onSetThreadBranch={setThreadBranch}
+            {...(onCheckoutPullRequestRequest ? { onCheckoutPullRequestRequest } : {})}
+            {...(onComposerFocusRequest ? { onComposerFocusRequest } : {})}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-5 pb-3 pt-1">

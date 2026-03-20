@@ -18,3 +18,5 @@ apps/web/.playwright
 apps/web/playwright-report
 apps/web/src/components/__screenshots__
 .vitest-*
+apps/vscode/dist-webview
+apps/vscode/dist-server

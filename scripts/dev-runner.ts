@@ -189,12 +189,12 @@ export function createDevRunnerEnv({
 
     if (mode === "dev") {
       output.T3CODE_MODE = "web";
-      delete output.T3CODE_DESKTOP_WS_URL;
+      delete output.ORQENT_DESKTOP_WS_URL;
     }
 
     if (mode === "dev:server" || mode === "dev:web") {
       output.T3CODE_MODE = "web";
-      delete output.T3CODE_DESKTOP_WS_URL;
+      delete output.ORQENT_DESKTOP_WS_URL;
     }
 
     return output;

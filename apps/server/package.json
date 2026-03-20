@@ -3,7 +3,7 @@
   "version": "0.0.10",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pingdotgg/t3code",
+    "url": "https://github.com/pingdotgg/orqent",
     "directory": "apps/server"
   },
   "bin": {
@@ -15,7 +15,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun run src/index.ts",
-    "build": "node scripts/cli.ts build",
+    "build": "bun scripts/cli.ts build",
     "start": "node dist/index.mjs",
     "prepare": "effect-language-service patch",
     "typecheck": "tsc --noEmit",

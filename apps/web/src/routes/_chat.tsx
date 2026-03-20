@@ -10,6 +10,8 @@ import { serverConfigQueryOptions } from "../lib/serverReactQuery";
 import { resolveShortcutCommand } from "../keybindings";
 import { selectThreadTerminalState, useTerminalStateStore } from "../terminalStateStore";
 import { useThreadSelectionStore } from "../threadSelectionStore";
+import { appMode } from "../env";
+import { shouldRenderThreadSidebar } from "../../../vscode/webview/src/shellMode";
 import { Sidebar, SidebarProvider } from "~/components/ui/sidebar";
 import { resolveSidebarNewThreadEnvMode } from "~/components/Sidebar.logic";
 import { useAppSettings } from "~/appSettings";
@@ -108,6 +110,15 @@ function ChatRouteLayout() {
       unsubscribe?.();
     };
   }, [navigate]);
+
+  if (!shouldRenderThreadSidebar(appMode)) {
+    return (
+      <>
+        <ChatRouteGlobalShortcuts />
+        <Outlet />
+      </>
+    );
+  }
 
   return (
     <SidebarProvider defaultOpen>

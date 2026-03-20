@@ -11,12 +11,12 @@
     "T3CODE_NO_BROWSER",
     "T3CODE_STATE_DIR",
     "T3CODE_AUTH_TOKEN",
-    "T3CODE_DESKTOP_WS_URL"
+    "ORQENT_DESKTOP_WS_URL"
   ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "dist-electron/**"]
+      "outputs": ["dist/**", "dist-electron/**", "dist-webview/**", "dist-server/**"]
     },
     "dev": {
       "dependsOn": ["@t3tools/contracts#build"],
@@ -32,6 +32,10 @@
       "dependsOn": ["^build"],
       "cache": false,
       "outputs": []
+    },
+    "package": {
+      "dependsOn": ["build"],
+      "outputs": ["*.vsix"]
     }
   }
 }

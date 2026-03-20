@@ -10,8 +10,8 @@ import {
   type TerminalContextDraft,
 } from "../lib/terminalContext";
 
-export const LAST_INVOKED_SCRIPT_BY_PROJECT_KEY = "t3code:last-invoked-script-by-project";
-const WORKTREE_BRANCH_PREFIX = "t3code";
+export const LAST_INVOKED_SCRIPT_BY_PROJECT_KEY = "orqent:last-invoked-script-by-project";
+const WORKTREE_BRANCH_PREFIX = "orqent";
 
 export const LastInvokedScriptByProjectSchema = Schema.Record(ProjectId, Schema.String);
 
