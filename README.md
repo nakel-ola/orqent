@@ -1,6 +1,6 @@
 # Orqent
 
-Orqent is a minimal web GUI for coding agents. Currently Codex-first, with Claude Code support coming soon.
+Orqent is a minimal web GUI for coding agents. Currently Codex and Claude Code, with more coming soon.
 
 ## How to use
 
