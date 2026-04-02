@@ -60,6 +60,24 @@ function findNodeBinary(): string {
   return process.execPath;
 }
 
+function checkNodeVersion(nodeBinary: string): { valid: boolean; version: string } {
+  try {
+    const version = execFileSync(nodeBinary, ["--version"], {
+      encoding: "utf8",
+      timeout: 2_000,
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+
+    const match = /^v(\d+)\./.exec(version);
+    if (!match) return { valid: false, version };
+
+    const major = parseInt(match[1] ?? "0", 10);
+    return { valid: major >= 22, version };
+  } catch {
+    return { valid: false, version: "unknown" };
+  }
+}
+
 function killServerProcess(): void {
   serverProcess?.kill();
   serverProcess = undefined;
@@ -80,6 +98,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   outputChannel.appendLine(`[orqent] server: ${serverEntry}`);
   outputChannel.appendLine(`[orqent] ws: ${wsUrl}`);
 
+  const { valid, version } = checkNodeVersion(nodeBinary);
+  if (!valid) {
+    const message = `Orqent requires Node.js >=22. Found ${version} at ${nodeBinary}. Check the "Orqent Server" output for details.`;
+    outputChannel.appendLine(`[orqent] ${message}`);
+    void vscode.window.showErrorMessage(message, "Show Output").then((choice) => {
+      if (choice === "Show Output") outputChannel?.show();
+    });
+    return;
+  }
+
   serverProcess = spawn(nodeBinary, [serverEntry], {
     env: {
       ...process.env,
@@ -87,6 +115,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       ORQENT_MODE: "desktop",
       ORQENT_NO_BROWSER: "1",
       ORQENT_STATE_DIR: context.globalStorageUri.fsPath,
+      ORQENT_LOG_WS_EVENTS: "1",
     },
     stdio: ["ignore", "pipe", "pipe"],
   });

@@ -64,6 +64,7 @@ const webviewConfig =
 
 let workspaceFolders: WorkspaceFolderEntry[] = [];
 const workspaceFolderListeners = new Set<(folders: WorkspaceFolderEntry[]) => void>();
+let bridgeCallRef: ((type: string, payload?: unknown) => Promise<unknown>) | null = null;
 
 function setWorkspaceFolders(nextFolders: WorkspaceFolderEntry[]): void {
   workspaceFolders = nextFolders;
@@ -185,6 +186,8 @@ function createVsCodeBridge(): DesktopBridge {
     });
   };
 
+  bridgeCallRef = call as (type: string, payload?: unknown) => Promise<unknown>;
+
   return {
     getWsUrl: () => wsUrl,
     pickFolder: () => call<string | null>("pickFolder"),
@@ -215,6 +218,14 @@ function createVsCodeBridge(): DesktopBridge {
       call<void>("updatePanelTitle", { title, projectName }),
     openInEditor: (path, editor) => call<void>("openInEditor", { path, editor }),
   };
+}
+
+export function reloadWindow(): Promise<void> {
+  if (bridgeCallRef) {
+    return bridgeCallRef("reloadWindow") as Promise<void>;
+  }
+  window.location.reload();
+  return Promise.resolve();
 }
 
 if (typeof window !== "undefined") {

@@ -104,6 +104,12 @@ export async function handleCommonBridgeRequest(
         return;
       }
 
+      case "reloadWindow": {
+        await vscode.commands.executeCommand("workbench.action.reloadWindow");
+        reply(undefined);
+        return;
+      }
+
       default: {
         reply(undefined, `Unknown bridge request type: ${message.type}`);
       }

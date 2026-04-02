@@ -15,7 +15,7 @@ import { newCommandId, newProjectId, newThreadId } from "~/lib/utils";
 import { readNativeApi } from "~/nativeApi";
 import { derivePendingApprovals, derivePendingUserInputs } from "~/session-logic";
 import { useStore } from "~/store";
-import { onWorkspaceFolders } from "~/vscodeBridge";
+import { onWorkspaceFolders, reloadWindow } from "~/vscodeBridge";
 
 export function formatRelativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -87,12 +87,28 @@ export function VscodeSidebar() {
   const markThreadUnread = useStore((store) => store.markThreadUnread);
   const { settings: appSettings } = useAppSettings();
   const [workspaceFolders, setWorkspaceFolders] = useState<WorkspaceFolderEntry[]>([]);
+  const [connectionTimedOut, setConnectionTimedOut] = useState(false);
   const [renamingThreadId, setRenamingThreadId] = useState<ThreadId | null>(null);
   const [renamingTitle, setRenamingTitle] = useState("");
   const renamingInputRef = useRef<HTMLInputElement | null>(null);
   const renamingCommittedRef = useRef(false);
 
   useEffect(() => onWorkspaceFolders(setWorkspaceFolders), []);
+
+  useEffect(() => {
+    if (workspaceFolders.length === 0 || threadsHydrated) {
+      setConnectionTimedOut(false);
+      return;
+    }
+
+    const timerId = setTimeout(() => {
+      setConnectionTimedOut(true);
+    }, 15_000);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [workspaceFolders.length, threadsHydrated]);
 
   useEffect(() => {
     if (!threadsHydrated || workspaceFolders.length === 0) {
@@ -278,6 +294,23 @@ export function VscodeSidebar() {
         <p className="text-center text-sm text-muted-foreground">
           Open a folder in VS Code to get started.
         </p>
+      </div>
+    ) : connectionTimedOut ? (
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 p-4">
+        <p className="text-center text-sm text-muted-foreground">
+          Connection failed. Reload the window to retry.
+        </p>
+        {window.desktopBridge?.getWsUrl() ? (
+          <p className="text-center font-mono text-[10px] text-muted-foreground/50">
+            {window.desktopBridge.getWsUrl()}
+          </p>
+        ) : null}
+        <button
+          className="rounded bg-muted px-3 py-1 text-xs text-foreground hover:bg-muted/80"
+          onClick={() => void reloadWindow()}
+        >
+          Reload Window
+        </button>
       </div>
     ) : visibleProjects.length === 0 ? (
       <div className="flex flex-1 items-center justify-center p-4">
