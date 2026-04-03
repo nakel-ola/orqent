@@ -6,7 +6,7 @@ import {
   getThreadPanelEmptyStateCopy,
   isPanelMode,
   shouldRenderThreadSidebarTrigger,
-} from "../../../vscode/webview/src/shellMode";
+} from "../shellMode";
 
 function ChatIndexRouteView() {
   const emptyStateCopy = getThreadPanelEmptyStateCopy(appMode);

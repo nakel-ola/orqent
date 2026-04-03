@@ -12,6 +12,7 @@ packages/*/dist
 build/
 .logs/
 release/
+release-mock/
 .t3
 .idea/
 apps/web/.playwright
@@ -20,3 +21,5 @@ apps/web/src/components/__screenshots__
 .vitest-*
 apps/vscode/dist-webview
 apps/vscode/dist-server
+__screenshots__/
+.tanstack

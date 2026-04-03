@@ -60,7 +60,7 @@ writeFileSync(
   )}\n`,
 );
 
-const installResult = spawnSync(process.execPath, ["install", "--production"], {
+const installResult = spawnSync("npm", ["install", "--omit=dev"], {
   cwd: distServerDir,
   stdio: "inherit",
   shell: process.platform === "win32",

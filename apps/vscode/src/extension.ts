@@ -92,7 +92,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const port = await findFreePort();
   const wsUrl = `ws://127.0.0.1:${port}`;
   const nodeBinary = findNodeBinary();
-  const serverEntry = path.join(context.extensionPath, "dist-server", "index.mjs");
+  const serverEntry = path.join(context.extensionPath, "dist-server", "bin.mjs");
 
   outputChannel.appendLine(`[orqent] node: ${nodeBinary}`);
   outputChannel.appendLine(`[orqent] server: ${serverEntry}`);
@@ -111,11 +111,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   serverProcess = spawn(nodeBinary, [serverEntry], {
     env: {
       ...process.env,
-      ORQENT_PORT: String(port),
-      ORQENT_MODE: "desktop",
-      ORQENT_NO_BROWSER: "1",
-      ORQENT_STATE_DIR: context.globalStorageUri.fsPath,
-      ORQENT_LOG_WS_EVENTS: "1",
+      T3CODE_PORT: String(port),
+      T3CODE_MODE: "desktop",
+      T3CODE_NO_BROWSER: "1",
+      T3CODE_HOME: context.globalStorageUri.fsPath,
+      T3CODE_LOG_WS_EVENTS: "1",
     },
     stdio: ["ignore", "pipe", "pipe"],
   });

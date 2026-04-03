@@ -81,6 +81,15 @@ export class MainViewProvider implements vscode.WebviewViewProvider {
       return;
     }
 
+    if (message.type === "openSettings") {
+      this.chatPanelManager.openSettingsPanel();
+      this.postMessage({
+        requestId: message.requestId,
+        result: undefined,
+      });
+      return;
+    }
+
     await handleCommonBridgeRequest(
       {
         postMessage: (payload) => this.view?.webview.postMessage(payload) ?? false,

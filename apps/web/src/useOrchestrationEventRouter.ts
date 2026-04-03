@@ -1,4 +1,4 @@
-import type { NativeApi, ServerConfigUpdatedPayload, WsWelcomePayload } from "@t3tools/contracts";
+import type { NativeApi, ServerConfigUpdatedPayload, ServerLifecycleWelcomePayload } from "@t3tools/contracts";
 import { ThreadId } from "@t3tools/contracts";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { Throttler } from "@tanstack/react-pacer";
@@ -7,13 +7,12 @@ import { useEffect } from "react";
 import { clearPromotedDraftThreads, useComposerDraftStore } from "./composerDraftStore";
 import { projectQueryKeys } from "./lib/projectReactQuery";
 import { providerQueryKeys } from "./lib/providerReactQuery";
-import { serverQueryKeys } from "./lib/serverReactQuery";
 import { collectActiveTerminalThreadIds } from "./lib/terminalStateCleanup";
 import { readNativeApi } from "./nativeApi";
+import { onServerConfigUpdated, onWelcome } from "./rpc/serverState";
 import { useStore } from "./store";
 import { terminalRunningSubprocessFromEvent } from "./terminalActivity";
 import { useTerminalStateStore } from "./terminalStateStore";
-import { onServerConfigUpdated, onServerWelcome } from "./wsNativeApi";
 
 interface ServerConfigUpdatedContext {
   payload: ServerConfigUpdatedPayload;
@@ -23,12 +22,12 @@ interface ServerConfigUpdatedContext {
 }
 
 export interface UseOrchestrationEventRouterOptions {
-  onWelcome?: (payload: WsWelcomePayload) => Promise<void> | void;
+  onWelcome?: (payload: ServerLifecycleWelcomePayload) => Promise<void> | void;
   onServerConfigUpdated?: (context: ServerConfigUpdatedContext) => Promise<void> | void;
 }
 
 export function useOrchestrationEventRouter(options: UseOrchestrationEventRouterOptions = {}) {
-  const { onServerConfigUpdated: onServerConfigUpdatedCallback, onWelcome } = options;
+  const { onServerConfigUpdated: onServerConfigUpdatedCallback, onWelcome: onWelcomeCallback } = options;
   const syncServerReadModel = useStore((store) => store.syncServerReadModel);
   const removeOrphanedTerminalStates = useTerminalStateStore(
     (store) => store.removeOrphanedTerminalStates,
@@ -134,20 +133,19 @@ export function useOrchestrationEventRouter(options: UseOrchestrationEventRouter
         );
     });
 
-    const unsubWelcome = onServerWelcome((payload) => {
+    const unsubWelcome = onWelcome((payload) => {
       void (async () => {
         await syncSnapshot();
         if (disposed) {
           return;
         }
 
-        await onWelcome?.(payload);
+        await onWelcomeCallback?.(payload);
       })().catch(() => undefined);
     });
 
     let subscribed = false;
     const unsubServerConfigUpdated = onServerConfigUpdated((payload) => {
-      void queryClient.invalidateQueries({ queryKey: serverQueryKeys.config() });
       void Promise.resolve(
         onServerConfigUpdatedCallback?.({
           payload,
@@ -170,7 +168,7 @@ export function useOrchestrationEventRouter(options: UseOrchestrationEventRouter
     };
   }, [
     onServerConfigUpdatedCallback,
-    onWelcome,
+    onWelcomeCallback,
     queryClient,
     removeOrphanedTerminalStates,
     syncServerReadModel,

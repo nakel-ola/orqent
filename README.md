@@ -2,16 +2,22 @@
 
 Orqent is a minimal web GUI for coding agents. Currently Codex and Claude Code, with more coming soon.
 
-## How to use
+## Installation
 
 > [!WARNING]
-> You need to have [Codex CLI](https://github.com/openai/codex) installed and authorized for Orqent to work.
+> Orqent currently supports Codex and Claude.
+> Install and authenticate at least one provider before use:
+>
+> - Codex: install [Codex CLI](https://github.com/openai/codex) and run `codex login`
+> - Claude: install Claude Code and run `claude auth login`
+
+### Run without installing
 
 ```bash
 npx t3
 ```
 
-You can also just install the desktop app. It's cooler.
+### Desktop app
 
 Install the [desktop app from the Releases page](https://github.com/pingdotgg/orqent/releases)
 
@@ -35,6 +41,27 @@ Package a `.vsix`:
 
 ```bash
 bun run package:vscode
+```
+
+
+Install the latest version of the desktop app from [GitHub Releases](https://github.com/pingdotgg/t3code/releases), or from your favorite package registry:
+
+#### Windows (`winget`)
+
+```bash
+winget install T3Tools.T3Code
+```
+
+#### macOS (Homebrew)
+
+```bash
+brew install --cask t3-code
+```
+
+#### Arch Linux (AUR)
+
+```bash
+yay -S t3code-bin
 ```
 
 ## Some notes

@@ -100,6 +100,7 @@ function createFallbackBridge(): DesktopBridge {
     },
     onMenuAction: () => () => {},
     getUpdateState: async () => disabledUpdateState,
+    checkForUpdate: async () => ({ checked: false, state: disabledUpdateState }),
     downloadUpdate: async () => ({
       accepted: false,
       completed: false,
@@ -202,6 +203,7 @@ function createVsCodeBridge(): DesktopBridge {
       };
     },
     getUpdateState: async () => disabledUpdateState,
+    checkForUpdate: async () => ({ checked: false, state: disabledUpdateState }),
     downloadUpdate: async () => ({
       accepted: false,
       completed: false,
@@ -225,6 +227,13 @@ export function reloadWindow(): Promise<void> {
     return bridgeCallRef("reloadWindow") as Promise<void>;
   }
   window.location.reload();
+  return Promise.resolve();
+}
+
+export function openSettings(): Promise<void> {
+  if (bridgeCallRef) {
+    return bridgeCallRef("openSettings") as Promise<void>;
+  }
   return Promise.resolve();
 }
 

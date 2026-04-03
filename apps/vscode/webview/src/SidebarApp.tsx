@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { StoreProvider } from "~/store";
+import { AppAtomRegistryProvider } from "~/rpc/atomRegistry";
+import { ServerStateBootstrap } from "~/rpc/serverStateBootstrap";
 import { useOrchestrationEventRouter } from "~/useOrchestrationEventRouter";
 import { VscodeSidebar } from "./VscodeSidebar";
 
@@ -14,6 +15,7 @@ function SidebarEventRouter() {
 function SidebarAppInner() {
   return (
     <>
+      <ServerStateBootstrap />
       <SidebarEventRouter />
       <VscodeSidebar />
     </>
@@ -23,9 +25,9 @@ function SidebarAppInner() {
 export function SidebarApp() {
   return (
     <QueryClientProvider client={queryClient}>
-      <StoreProvider>
+      <AppAtomRegistryProvider>
         <SidebarAppInner />
-      </StoreProvider>
+      </AppAtomRegistryProvider>
     </QueryClientProvider>
   );
 }

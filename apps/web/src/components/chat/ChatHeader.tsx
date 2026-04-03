@@ -5,10 +5,15 @@ import {
   type ThreadId,
 } from "@t3tools/contracts";
 import { memo } from "react";
+import GitActionsControl from "../GitActionsControl";
+import { DiffIcon, TerminalSquareIcon } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { SidebarTrigger } from "../ui/sidebar";
-import { type NewProjectScriptInput } from "../ProjectScriptsControl";
+import ProjectScriptsControl, { type NewProjectScriptInput } from "../ProjectScriptsControl";
 import { ChatThreadActions } from "./ChatThreadActions";
+import { OpenInPicker } from "./OpenInPicker";
+import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
+import { Toggle } from "../ui/toggle";
 
 interface ChatHeaderProps {
   activeThreadId: ThreadId;
@@ -21,6 +26,9 @@ interface ChatHeaderProps {
   preferredScriptId: string | null;
   keybindings: ResolvedKeybindingsConfig;
   availableEditors: ReadonlyArray<EditorId>;
+  terminalAvailable: boolean;
+  terminalOpen: boolean;
+  terminalToggleShortcutLabel: string | null;
   diffToggleShortcutLabel: string | null;
   gitCwd: string | null;
   diffOpen: boolean;
@@ -28,6 +36,7 @@ interface ChatHeaderProps {
   onAddProjectScript: (input: NewProjectScriptInput) => Promise<void>;
   onUpdateProjectScript: (scriptId: string, input: NewProjectScriptInput) => Promise<void>;
   onDeleteProjectScript: (scriptId: string) => Promise<void>;
+  onToggleTerminal: () => void;
   onToggleDiff: () => void;
 }
 
@@ -42,6 +51,9 @@ export const ChatHeader = memo(function ChatHeader({
   preferredScriptId,
   keybindings,
   availableEditors,
+  terminalAvailable,
+  terminalOpen,
+  terminalToggleShortcutLabel,
   diffToggleShortcutLabel,
   gitCwd,
   diffOpen,
@@ -49,10 +61,11 @@ export const ChatHeader = memo(function ChatHeader({
   onAddProjectScript,
   onUpdateProjectScript,
   onDeleteProjectScript,
+  onToggleTerminal,
   onToggleDiff,
 }: ChatHeaderProps) {
   return (
-    <div className="flex min-w-0 flex-1 items-center gap-2">
+    <div className="@container/header-actions flex min-w-0 flex-1 items-center gap-2">
       <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden sm:gap-3">
         {showThreadSidebarTrigger && <SidebarTrigger className="size-7 shrink-0 md:hidden" />}
         <h2
@@ -62,8 +75,8 @@ export const ChatHeader = memo(function ChatHeader({
           {activeThreadTitle}
         </h2>
         {activeProjectName && (
-          <Badge variant="outline" className="min-w-0 shrink truncate">
-            {activeProjectName}
+          <Badge variant="outline" className="min-w-0 shrink overflow-hidden">
+            <span className="min-w-0 truncate">{activeProjectName}</span>
           </Badge>
         )}
         {activeProjectName && !isGitRepo && (
@@ -72,25 +85,75 @@ export const ChatHeader = memo(function ChatHeader({
           </Badge>
         )}
       </div>
-      <ChatThreadActions
-        activeThreadId={activeThreadId}
-        activeProjectName={activeProjectName}
-        isGitRepo={isGitRepo}
-        openInCwd={openInCwd}
-        activeProjectScripts={activeProjectScripts}
-        preferredScriptId={preferredScriptId}
-        keybindings={keybindings}
-        availableEditors={availableEditors}
-        diffToggleShortcutLabel={diffToggleShortcutLabel}
-        gitCwd={gitCwd}
-        diffOpen={diffOpen}
-        onRunProjectScript={onRunProjectScript}
-        onAddProjectScript={onAddProjectScript}
-        onUpdateProjectScript={onUpdateProjectScript}
-        onDeleteProjectScript={onDeleteProjectScript}
-        onToggleDiff={onToggleDiff}
-        className="flex-1"
-      />
+      <div className="flex shrink-0 items-center justify-end gap-2 @3xl/header-actions:gap-3">
+        {activeProjectScripts && (
+          <ProjectScriptsControl
+            scripts={activeProjectScripts}
+            keybindings={keybindings}
+            preferredScriptId={preferredScriptId}
+            onRunScript={onRunProjectScript}
+            onAddScript={onAddProjectScript}
+            onUpdateScript={onUpdateProjectScript}
+            onDeleteScript={onDeleteProjectScript}
+          />
+        )}
+        {activeProjectName && (
+          <OpenInPicker
+            keybindings={keybindings}
+            availableEditors={availableEditors}
+            openInCwd={openInCwd}
+          />
+        )}
+        {activeProjectName && <GitActionsControl gitCwd={gitCwd} activeThreadId={activeThreadId} />}
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Toggle
+                className="shrink-0"
+                pressed={terminalOpen}
+                onPressedChange={onToggleTerminal}
+                aria-label="Toggle terminal drawer"
+                variant="outline"
+                size="xs"
+                disabled={!terminalAvailable}
+              >
+                <TerminalSquareIcon className="size-3" />
+              </Toggle>
+            }
+          />
+          <TooltipPopup side="bottom">
+            {!terminalAvailable
+              ? "Terminal is unavailable until this thread has an active project."
+              : terminalToggleShortcutLabel
+                ? `Toggle terminal drawer (${terminalToggleShortcutLabel})`
+                : "Toggle terminal drawer"}
+          </TooltipPopup>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Toggle
+                className="shrink-0"
+                pressed={diffOpen}
+                onPressedChange={onToggleDiff}
+                aria-label="Toggle diff panel"
+                variant="outline"
+                size="xs"
+                disabled={!isGitRepo}
+              >
+                <DiffIcon className="size-3" />
+              </Toggle>
+            }
+          />
+          <TooltipPopup side="bottom">
+            {!isGitRepo
+              ? "Diff panel is unavailable because this project is not a git repository."
+              : diffToggleShortcutLabel
+                ? `Toggle diff panel (${diffToggleShortcutLabel})`
+                : "Toggle diff panel"}
+          </TooltipPopup>
+        </Tooltip>
+      </div>
     </div>
   );
 });
