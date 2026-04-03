@@ -353,7 +353,7 @@ export function VscodeSidebar() {
                         key={thread.id}
                         role="button"
                         tabIndex={0}
-                        className="flex cursor-default items-center gap-1.5 px-4 py-1.5 text-left text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground rounded-lg "
+                        className="flex cursor-pointer items-center gap-1.5 px-4 py-1.5 text-left text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground rounded-lg "
                         title={thread.title || "New Thread"}
                         onClick={() => handleThreadClick(thread.id)}
                         onContextMenu={(event) => {
@@ -435,7 +435,7 @@ export function VscodeSidebar() {
       )}
       <div className="shrink-0 p-2">
         <button
-          className="flex w-full cursor-default items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           onClick={() => void openSettings()}
         >
           <svg
