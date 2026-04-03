@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import type { DesktopOpenThreadPayload } from "@t3tools/contracts";
 
 import { getWebviewContent } from "../../utils/webviewHtml.js";
+import { getVsCodeThemeKind } from "../../utils/theme.js";
 import { handleCommonBridgeRequest } from "./bridgeHandler.js";
 
 export function getChatPanelTitle(title: string, projectName: string): string {
@@ -49,6 +50,7 @@ export class ChatPanelManager {
       threadId: payload.threadId,
       draftContext: payload.draftContext,
       wsUrl: this.wsUrl,
+      vsCodeTheme: getVsCodeThemeKind(),
     });
 
     this.panelsByThreadId.set(payload.threadId, panel);
@@ -108,6 +110,7 @@ export class ChatPanelManager {
       draftContext: null,
       initialPath: "/settings",
       wsUrl: this.wsUrl,
+      vsCodeTheme: getVsCodeThemeKind(),
     });
 
     this.panelsByThreadId.set("__settings__", panel);
@@ -127,6 +130,12 @@ export class ChatPanelManager {
       undefined,
       this.context.subscriptions,
     );
+  }
+
+  broadcastTheme(kind: "light" | "dark"): void {
+    for (const panel of this.panelsByThreadId.values()) {
+      void panel.webview.postMessage({ type: "vsCodeTheme", kind });
+    }
   }
 
   dispose(): void {

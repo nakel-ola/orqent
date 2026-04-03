@@ -1,4 +1,8 @@
-import type { NativeApi, ServerConfigUpdatedPayload, ServerLifecycleWelcomePayload } from "@t3tools/contracts";
+import type {
+  NativeApi,
+  ServerConfigUpdatedPayload,
+  ServerLifecycleWelcomePayload,
+} from "@t3tools/contracts";
 import { ThreadId } from "@t3tools/contracts";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { Throttler } from "@tanstack/react-pacer";
@@ -27,7 +31,8 @@ export interface UseOrchestrationEventRouterOptions {
 }
 
 export function useOrchestrationEventRouter(options: UseOrchestrationEventRouterOptions = {}) {
-  const { onServerConfigUpdated: onServerConfigUpdatedCallback, onWelcome: onWelcomeCallback } = options;
+  const { onServerConfigUpdated: onServerConfigUpdatedCallback, onWelcome: onWelcomeCallback } =
+    options;
   const syncServerReadModel = useStore((store) => store.syncServerReadModel);
   const removeOrphanedTerminalStates = useTerminalStateStore(
     (store) => store.removeOrphanedTerminalStates,

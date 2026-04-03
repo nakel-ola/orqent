@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import type { DesktopOpenThreadPayload, WorkspaceFolderEntry } from "@t3tools/contracts";
 
 import { getWebviewContent } from "../../utils/webviewHtml.js";
+import { getVsCodeThemeKind } from "../../utils/theme.js";
 import { handleCommonBridgeRequest } from "./bridgeHandler.js";
 import { ChatPanelManager } from "./chatPanelManager.js";
 
@@ -41,6 +42,7 @@ export class MainViewProvider implements vscode.WebviewViewProvider {
       threadId: null,
       draftContext: null,
       wsUrl: this.wsUrl,
+      vsCodeTheme: getVsCodeThemeKind(),
     });
 
     view.onDidChangeVisibility(() => {
@@ -68,6 +70,7 @@ export class MainViewProvider implements vscode.WebviewViewProvider {
       type: "init",
       wsUrl: this.wsUrl,
       workspaceFolders: getWorkspaceFolders(),
+      vsCodeTheme: getVsCodeThemeKind(),
     });
   }
 

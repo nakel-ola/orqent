@@ -1130,7 +1130,6 @@ export const makeGitManager = Effect.fn("makeGitManager")(function* () {
       kind: "phase_started",
       phase: "commit",
       label: "Committing...",
-
     });
 
     let currentHookName: string | null = null;

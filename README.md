@@ -43,7 +43,6 @@ Package a `.vsix`:
 bun run package:vscode
 ```
 
-
 Install the latest version of the desktop app from [GitHub Releases](https://github.com/pingdotgg/t3code/releases), or from your favorite package registry:
 
 #### Windows (`winget`)

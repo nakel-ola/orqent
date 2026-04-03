@@ -321,11 +321,12 @@ export function VscodeSidebar() {
   return (
     <div
       className="flex h-dvh flex-col overflow-hidden text-foreground"
-        style={{ backgroundColor: "var(--vscode-sideBarTitle-background)" }}
-      >
+      style={{ backgroundColor: "var(--vscode-sideBarTitle-background)" }}
+    >
       {emptyState ?? (
         <div className="flex flex-1 flex-col overflow-y-auto p-2">
-          {threads.filter((t) => visibleProjects.some((p) => p.id === t.projectId)).length === 0 && (
+          {threads.filter((t) => visibleProjects.some((p) => p.id === t.projectId)).length ===
+            0 && (
             <div className="flex flex-1 items-center justify-center p-4">
               <div className="text-center">
                 <p className="text-sm text-muted-foreground/70">No threads yet</p>

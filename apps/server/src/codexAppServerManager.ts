@@ -331,7 +331,6 @@ export function normalizeCodexModelSlug(
   return normalized;
 }
 
-
 function buildCodexCollaborationMode(input: {
   readonly interactionMode?: "default" | "plan";
   readonly model?: string;

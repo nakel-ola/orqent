@@ -32,7 +32,7 @@ import {
 import { ProviderModelPicker } from "../chat/ProviderModelPicker";
 import { TraitsPicker } from "../chat/TraitsPicker";
 import { resolveAndPersistPreferredEditor } from "../../editorPreferences";
-import { isElectron } from "../../env";
+import { isElectron, isVSCodeWebview } from "../../env";
 import { useTheme } from "../../hooks/useTheme";
 import { useSettings, useUpdateSettings } from "../../hooks/useSettings";
 import { useThreadActions } from "../../hooks/useThreadActions";
@@ -458,7 +458,7 @@ export function useSettingsRestore(onRestored?: () => void) {
 
   const changedSettingLabels = useMemo(
     () => [
-      ...(theme !== "system" ? ["Theme"] : []),
+      ...(!isVSCodeWebview && theme !== "system" ? ["Theme"] : []),
       ...(settings.timestampFormat !== DEFAULT_UNIFIED_SETTINGS.timestampFormat
         ? ["Time format"]
         : []),
@@ -503,7 +503,7 @@ export function useSettingsRestore(onRestored?: () => void) {
     );
     if (!confirmed) return;
 
-    setTheme("system");
+    if (!isVSCodeWebview) setTheme("system");
     resetSettings();
     onRestored?.();
   }, [changedSettingLabels, onRestored, resetSettings, setTheme]);
@@ -738,38 +738,40 @@ export function GeneralSettingsPanel() {
   return (
     <SettingsPageContainer>
       <SettingsSection title="General">
-        <SettingsRow
-          title="Theme"
-          description="Choose how T3 Code looks across the app."
-          resetAction={
-            theme !== "system" ? (
-              <SettingResetButton label="theme" onClick={() => setTheme("system")} />
-            ) : null
-          }
-          control={
-            <Select
-              value={theme}
-              onValueChange={(value) => {
-                if (value === "system" || value === "light" || value === "dark") {
-                  setTheme(value);
-                }
-              }}
-            >
-              <SelectTrigger className="w-full sm:w-40" aria-label="Theme preference">
-                <SelectValue>
-                  {THEME_OPTIONS.find((option) => option.value === theme)?.label ?? "System"}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectPopup align="end" alignItemWithTrigger={false}>
-                {THEME_OPTIONS.map((option) => (
-                  <SelectItem hideIndicator key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectPopup>
-            </Select>
-          }
-        />
+        {!isVSCodeWebview && (
+          <SettingsRow
+            title="Theme"
+            description="Choose how T3 Code looks across the app."
+            resetAction={
+              theme !== "system" ? (
+                <SettingResetButton label="theme" onClick={() => setTheme("system")} />
+              ) : null
+            }
+            control={
+              <Select
+                value={theme}
+                onValueChange={(value) => {
+                  if (value === "system" || value === "light" || value === "dark") {
+                    setTheme(value);
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full sm:w-40" aria-label="Theme preference">
+                  <SelectValue>
+                    {THEME_OPTIONS.find((option) => option.value === theme)?.label ?? "System"}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectPopup align="end" alignItemWithTrigger={false}>
+                  {THEME_OPTIONS.map((option) => (
+                    <SelectItem hideIndicator key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectPopup>
+              </Select>
+            }
+          />
+        )}
 
         <SettingsRow
           title="Time format"

@@ -136,6 +136,7 @@ export interface T3CodeWebviewConfig {
   draftContext: DesktopDraftContext | null;
   wsUrl: string;
   initialPath?: string;
+  vsCodeTheme?: "light" | "dark";
 }
 
 export interface DesktopBridge {

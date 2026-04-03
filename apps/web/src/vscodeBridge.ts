@@ -30,6 +30,7 @@ type BridgeHostMessage =
       type: "init";
       wsUrl: string;
       workspaceFolders: WorkspaceFolderEntry[];
+      vsCodeTheme?: "light" | "dark";
     }
   | {
       type: "workspaceFolders";
@@ -38,6 +39,10 @@ type BridgeHostMessage =
   | {
       type: "menuAction";
       action: string;
+    }
+  | {
+      type: "vsCodeTheme";
+      kind: "light" | "dark";
     };
 
 const disabledUpdateState: DesktopUpdateState = {
@@ -65,6 +70,11 @@ const webviewConfig =
 let workspaceFolders: WorkspaceFolderEntry[] = [];
 const workspaceFolderListeners = new Set<(folders: WorkspaceFolderEntry[]) => void>();
 let bridgeCallRef: ((type: string, payload?: unknown) => Promise<unknown>) | null = null;
+
+function applyVsCodeTheme(kind: "light" | "dark"): void {
+  localStorage.setItem("orqent:theme", kind);
+  window.dispatchEvent(new StorageEvent("storage", { key: "orqent:theme", newValue: kind }));
+}
 
 function setWorkspaceFolders(nextFolders: WorkspaceFolderEntry[]): void {
   workspaceFolders = nextFolders;
@@ -167,11 +177,19 @@ function createVsCodeBridge(): DesktopBridge {
     if (data.type === "init") {
       wsUrl = data.wsUrl;
       setWorkspaceFolders(data.workspaceFolders);
+      if (data.vsCodeTheme) {
+        applyVsCodeTheme(data.vsCodeTheme);
+      }
       return;
     }
 
     if (data.type === "workspaceFolders") {
       setWorkspaceFolders(data.folders);
+      return;
+    }
+
+    if (data.type === "vsCodeTheme") {
+      applyVsCodeTheme(data.kind);
     }
   });
 

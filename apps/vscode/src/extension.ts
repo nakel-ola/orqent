@@ -6,6 +6,7 @@ import * as vscode from "vscode";
 import { registerCommands } from "./commands/index.js";
 import { ChatPanelManager } from "./providers/webview/chatPanelManager.js";
 import { MainViewProvider } from "./providers/webview/mainViewProvider.js";
+import { getVsCodeThemeKind } from "./utils/theme.js";
 
 let outputChannel: vscode.OutputChannel | undefined;
 let serverProcess: ChildProcess | undefined;
@@ -147,6 +148,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
           name: folder.name,
         })),
       });
+    }),
+    vscode.window.onDidChangeActiveColorTheme(() => {
+      const kind = getVsCodeThemeKind();
+      mainViewProvider.postMessage({ type: "vsCodeTheme", kind });
+      chatPanelManager?.broadcastTheme(kind);
     }),
     {
       dispose: () => {

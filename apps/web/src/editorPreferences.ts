@@ -29,7 +29,7 @@ export function resolveAndPersistPreferredEditor(
 
 export async function openInPreferredEditor(api: NativeApi, targetPath: string): Promise<EditorId> {
   if (isVSCodeWebview && typeof window !== "undefined" && window.desktopBridge?.openInEditor) {
-    await api.shell.openInEditor(targetPath, "vscode");
+    await window.desktopBridge.openInEditor(targetPath, "vscode");
     return "vscode";
   }
 

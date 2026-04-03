@@ -1419,7 +1419,6 @@ async function bootstrap(): Promise<void> {
   backendWsUrl = `${baseUrl}/?token=${encodeURIComponent(backendAuthToken)}`;
   writeDesktopLogHeader(`bootstrap resolved websocket endpoint baseUrl=${baseUrl}`);
 
-
   registerIpcHandlers();
   writeDesktopLogHeader("bootstrap ipc handlers registered");
   startBackend();

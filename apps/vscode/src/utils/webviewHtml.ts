@@ -33,7 +33,7 @@ export function injectWebviewBootstrap(
   ].join("; ");
 
   const cspTag = `<meta http-equiv="Content-Security-Policy" content="${csp}" />`;
-  const configScript = `<script nonce="${input.nonce}">window.__ORQENT_WEBVIEW_CONFIG__=${configJson};</script>`;
+  const configScript = `<script nonce="${input.nonce}">window.__ORQENT_WEBVIEW_CONFIG__=${configJson};(function(){var t=window.__ORQENT_WEBVIEW_CONFIG__.vsCodeTheme;if(t==='light'||t==='dark')localStorage.setItem('orqent:theme',t);})();</script>`;
 
   return html
     .replace(/<script /g, `<script nonce="${input.nonce}" `)

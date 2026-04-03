@@ -80,7 +80,6 @@ const makeCodexTextGeneration = Effect.gen(function* () {
             }),
         ),
       );
-
   };
 
   const safeUnlink = (filePath: string): Effect.Effect<void, never> =>
